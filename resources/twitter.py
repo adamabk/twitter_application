@@ -48,14 +48,12 @@ class Twitter:
 
         try:
             response = requests.get(url, headers=headers, params=params)
-            self.parse_and_persist(response)
             return response.json()
 
         except requests.exceptions.RequestException as e:
             raise RuntimeError("Twitter search by user failed - request Error: {}".format(e))
 
-    def parse_and_persist(self, response):
-        response_json = response.json()
+    def parse_and_persist(self, response_json):
         user_payload = response_json[0]['user']
         if not User.find_by_id(user_payload['id']):
             user = User(**user_payload)

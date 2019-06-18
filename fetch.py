@@ -18,20 +18,25 @@ def validate_argument(parser):
 
 
 if __name__ == '__main__':
+    import os
+
     from . import create_parser, validate_argument
     from db import init_db
-    from resources import twitter_fetcher
+    from resources import Twitter
 
 
     init_db()   # Initialize db
+    twitter_fetcher = Twitter(os.environ['CONSUMER_KEY'],
+                              os.environ['CONSUMER_SECRET'])
 
     parser = create_parser()
     args = parser.parse_args()
     username = validate_argument(args)
 
     if username:
-        t = twitter_fetcher.search_by_user(username)
+        response_json = twitter_fetcher.search_by_user(username)
+        twitter_fetcher.parse_and_persist(response_json)
     else:
         print("username was not provided - Fetcher Closing")
     if args.show:
-        print(t)
+        print(response_json)

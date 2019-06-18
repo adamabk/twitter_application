@@ -2,6 +2,7 @@ version: "3"
 services:
   fetcher:
     build: .
+    command: python3 ./fetch.py --user=mta
     container_name: "fetcher"
     environment:
       - CONSUMER_KEY
@@ -21,3 +22,14 @@ services:
       - POSTGRES_USER=guest
       - POSTGRES_PASSWORD=guest
       - POSTGRES_DB=twitter
+
+  test:
+    build: .
+    container_name: "fetcher_test"
+    restart: always
+    environment:
+      - CONSUMER_KEY
+      - CONSUMER_SECRET
+      - POSTGRES_URI=${POSTGRES_URI:-postgres://guest:guest@db:5432/twitter}
+    command: sh -c "python3 -m pytest tests/"
+

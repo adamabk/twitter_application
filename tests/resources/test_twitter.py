@@ -1,9 +1,15 @@
-from models.twitter import Twitter
-from tests.reosources.mocked_responses import <mocked_responses>
+import requests
 
+from resources import Twitter
+from tests.resources.mocked_responses import mocked_request_get, mocked_request_post
+
+
+twitter_client = Twitter("consumer_key", "consumer_secret")
 
 def test_correct_authenticate(monkeypatch):
-    pass
+    monkeypatch.setattr(requests, "post", mocked_request_post('success'))
+    twitter_client.authenticate()
+    assert twitter_client.bearer == "your_token"
 
 
 def test_failed_request_authenticate(monkeypatch):

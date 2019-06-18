@@ -21,3 +21,6 @@ stop: ## Stop running applications
 
 db: ## Start DB container
 	@docker-compose up --build db
+
+test: ## Test application in the container
+	@docker-compose up --build test
