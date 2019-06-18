@@ -1,3 +1,7 @@
+from requests.exceptions import HTTPError, RequestException
+
+
+# stated url to ensure that the test is only for Twitter API
 BASE_URL = 'https://api.twitter.com'
 
 
@@ -8,6 +12,10 @@ class MockResponse:
 
     def json(self):
         return self.json_data
+
+    def raise_for_status(self):
+        if self.status_code != 200:
+            raise HTTPError("HTTPError Raised")
 
 
 def mocked_request_get(success):
@@ -38,8 +46,11 @@ def mocked_request_post(response_type):
              if args[0] == BASE_URL + '/oauth2/token':
                 return MockResponse({"token_request": "invalid_token"}, 200)
 
-        return mocked_failure_post
+        return mocked_invalid_post
 
-    def mocked_failed_post(*args, **kwargs):
-        if args[0] == BASE_URL + '/oauth2/token':
-            return MockResponse({"token_request": "failed"}, 404)
+    else:
+        def mocked_failed_post(*args, **kwargs):
+            if args[0] == BASE_URL + '/oauth2/token':
+                return MockResponse({"token_request": "failed"}, 404)
+
+        return mocked_failed_post

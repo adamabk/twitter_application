@@ -24,18 +24,14 @@ class Twitter:
                    "Accept-Encoding": "gzip"}
         body = {"grant_type": "client_credentials"}
 
-        try:
-            response = requests.post(url, headers=headers, data=body)
-            resp_json = response.json()
-            if resp_json.get('token_type', False):
-                self.bearer = resp_json['access_token']
-            else:
-                raise RuntimeError(
-                    "Authentication Failed - please check the consumer_key"\
-                    "consumer_credentials\n returned: {}".format(resp_json))
+        response = requests.post(url, headers=headers, data=body)
+        response.raise_for_status()
+        resp_json = response.json()
 
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError("Twitter Authentication Failed - Request Error: {}".format(e))
+        if resp_json.get('token_type', False):
+            self.bearer = resp_json['access_token']
+        else:
+            raise RuntimeError("Twitter Authentication Failed - Token Not Found")
 
     def search_by_user(self, username, count=5):
         url = self.base_url + '/1.1/statuses/user_timeline.json'
@@ -46,12 +42,9 @@ class Twitter:
                    "Accept-Encoding": "gzip"}
         params = {"count": count, "screen_name": username}
 
-        try:
-            response = requests.get(url, headers=headers, params=params)
-            return response.json()
-
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError("Twitter search by user failed - request Error: {}".format(e))
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        return response.json()
 
     def parse_and_persist(self, response_json):
         user_payload = response_json[0]['user']
