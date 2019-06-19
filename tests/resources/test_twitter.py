@@ -4,7 +4,7 @@ from requests.exceptions import HTTPError
 import pytest
 
 from resources import Twitter
-from tests.resources.mocked_responses import mocked_request_get, mocked_request_post
+from tests.resources.mocked_responses import mocked_request_post
 
 
 @pytest.fixture
@@ -30,30 +30,3 @@ def test_failed_auth_code_authenticate(twitter_client_factory, monkeypatch):
     with pytest.raises(HTTPError):
         monkeypatch.setattr(requests, "post", mocked_request_post('fail'))
         twitter_client_factory.authenticate()
-
-
-def test_correct_search_by_user(twitter_client_factory, monkeypatch):
-    # Assuming that the bearer token is filled
-    twitter_client_factory.bearer = "testing"
-    monkeypatch.setattr(requests, "get", mocked_request_get(True))
-    actual = twitter_client_factory.search_by_user("testuser")
-    expected = {"response_status": "succeeded"}
-
-    assert actual == expected
-
-
-def test_no_bearer_search_by_user(twitter_client_factory, monkeypatch):
-    # Assuming that the bearer token is not filled
-    monkeypatch.setattr(requests, "get", mocked_request_get(True))
-    monkeypatch.setattr(requests, "post", mocked_request_post("success"))
-    actual = twitter_client_factory.search_by_user("testuser")
-    expected = {"response_status": "succeeded"}
-
-    assert actual == expected
-
-
-def test_incorrect_search_by_user(twitter_client_factory, monkeypatch):
-    with pytest.raises(HTTPError):
-        twitter_client_factory.bearer = 'testbearer'
-        monkeypatch.setattr(requests, "post", mocked_request_get(False))
-        twitter_client_factory.search_by_user('testuser')

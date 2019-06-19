@@ -18,20 +18,6 @@ class MockResponse:
             raise HTTPError("HTTPError Raised")
 
 
-def mocked_request_get(success):
-    if success:
-        def mocked_success_get(*args, **kwargs):
-            if args[0] == BASE_URL + '/1.1/statuses/user_timeline.json':
-                return MockResponse({"response_status": "succeeded"}, 200)
-        return mocked_success_get
-
-    else:
-        def mocked_failure_get(*args, **kwargs):
-            if args[0] == BASE_URL + '/1.1/statuses/user_timeline.json':
-                return MockResponse({"response_status": "failed"}, 404)
-        return mocked_failure_get
-
-
 def mocked_request_post(response_type):
     if response_type == 'success':
         def mocked_success_post(*args, **kwargs):
