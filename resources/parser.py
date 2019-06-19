@@ -1,4 +1,4 @@
-from models import Tweet, User, HashTag
+from models import Tweet, User, HashTag, UserFollowers
 
 
 class JSONParser:
@@ -40,7 +40,24 @@ class JSONParser:
     def persist_followers(self, followers_json):
         # This is assuming that the followers are optional and that the class would have saved
         # its user_id already
-        pass
+
+        # Save Users that were not there before found in the followers API
+        follower_collections = []
+        for user in followers_json['users']:
+            if not User.find_by_id(user['id']):
+                follower_collections.append(User(**user))
+        self.session.bulk_save_objects(follower_collections)
+
+        # Save User_Follower Reference Table
+        if not UserFollowers.find_by_user_id(self.user_id):
+            user_followers = [UserFollowers(self.user_id, follower.id) for follower in follower_collections]
+        else:
+            followers = UserFollower.find_followers_of_user(self.user_id)
+            user_followers = [UserFollowers(self.user_id, follower.id)
+                              for follower in follower_collections if follower.id not in followers]
+
+        self.session.bulk_save_objects(user_followers)
+        self.session.flush()
 
     def persist_hashtags(self, hashtag_dict):
         for tweet_id, hashtag_list in hashtag_dict.items():

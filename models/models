@@ -1,0 +1,10 @@
+  /Users/adamkim/pythonDev/playground/ctfl-adam-kim/models:
+  total used in directory 40 available 9223372036852656638
+  drwxr-xr-x   8 adamkim  staff   256 Jun 19 17:38 .
+  drwxr-xr-x  19 adamkim  staff   608 Jun 19 17:27 ..
+  -rw-r--r--   1 adamkim  staff   166 Jun 19 17:38 __init__.py
+  drwxr-xr-x   6 adamkim  staff   192 Jun 19 16:33 __pycache__
+  -rw-r--r--   1 adamkim  staff  1227 Jun 19 16:33 entities.py
+  -rw-r--r--   1 adamkim  staff  2888 Jun 19 14:16 tweet.py
+  -rw-r--r--   1 adamkim  staff  2157 Jun 19 14:03 user.py
+  -rw-r--r--   1 adamkim  staff   979 Jun 19 17:37 references.py

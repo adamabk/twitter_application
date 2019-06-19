@@ -53,7 +53,7 @@ class Twitter:
         return response.json()
 
     def search_followers_by_user(self, username, get_all=False):
-        follower_endpoint = '/1.1/followers/list.json'
+        followers_endpoint = '/1.1/followers/list.json'
         params = {"screen_name": username}
 
         if get_all:
@@ -63,7 +63,7 @@ class Twitter:
             # This operation only returns the {"users": [...]}
             while cursor != -1:
                 try:
-                    response = self.__call_search(follower_endpoint, params)
+                    response = self.__call_search(followers_endpoint, params)
                     response_json = response.json()
                     followers['users'].extend(response_json['users'])
                     cursor = response_json['next_cursor']
@@ -71,7 +71,7 @@ class Twitter:
                     print("Could not finish the task due to - {}".format(err))
             return followers
 
-        response = self.__call_search(followers_endoint, params)
+        response = self.__call_search(followers_endpoint, params)
         return response.json()
 
     def search_user(self, username):
