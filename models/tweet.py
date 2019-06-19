@@ -72,11 +72,3 @@ class Tweet(Base):
     @classmethod
     def find_by_id(cls, _id):
         return db_session.query(cls).filter_by(id=_id).first()
-
-    @classmethod
-    def save_tweet(cls, response):
-        json_copy = response.copy()
-        user = json_copy.pop('user')
-        tweet = Tweet(**json_copy)
-        tweet.user_id = user['id']
-        return tweet

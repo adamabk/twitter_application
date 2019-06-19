@@ -28,11 +28,12 @@ The command will prompt you inside of the container where you will be able to ex
 The Python command is structured as following:
 
 ```shell
-$ python3 ./fetch.py --user=<TWITTER USER NAME> --show
+$ python3 ./fetch.py --user=<TWITTER USER NAME> --show --followers
 ```
 
---user   The user name you want to fetch the last 5 tweets
---show   The command to show the json payload retrieved from the Twitter API
+--user      The user name you want to fetch the last 5 tweets
+--show      (optional) The command to show the last 5 tweets retrieved from the Twitter API
+--followers (optional) The command to retrieve followers of the user (set to just 1 page), Grabbing all users are limited due to API rate limit
 
 ## Testing ##
 

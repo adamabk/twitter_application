@@ -1,4 +1,5 @@
 from base64 import b64encode
+from collections import defaultdict
 
 import requests
 
@@ -33,34 +34,48 @@ class Twitter:
         else:
             raise RuntimeError("Twitter Authentication Failed - Token Not Found")
 
-    def search_by_user(self, username, count=5):
-        url = self.base_url + '/1.1/statuses/user_timeline.json'
+    def __call_search(self, endpoint, params):
         if not self.bearer:
             self.authenticate()
 
+        url = self.base_url + endpoint
         headers = {"Authorization": "Bearer %s" % self.bearer,
                    "Accept-Encoding": "gzip"}
-        params = {"count": count, "screen_name": username}
 
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
+        return response
+
+    def search_tweets_by_user(self, username, count=5):
+        tweet_endpoint = '/1.1/statuses/user_timeline.json'
+        params = {"count": count, "screen_name": username}
+        response = self.__call_search(tweet_endpoint, params)
         return response.json()
 
-    def parse_and_persist(self, response_json):
-        user_payload = response_json[0]['user']
-        if not User.find_by_id(user_payload['id']):
-            user = User(**user_payload)
-            db_session.add(user)
+    def search_followers_by_user(self, username, get_all=False):
+        follower_endpoint = '/1.1/followers/list.json'
+        params = {"screen_name": username}
 
-        for payload in response_json:
-            if not Tweet.find_by_id(payload['id']):
-                entities_json = payload.pop('entities')
-                hashtags = entities_json['hashtags']
+        if get_all:
+            cursor = 0
+            followers = defaultdict(list)
+            # This would be the way to grab all of the followers.
+            # This operation only returns the {"users": [...]}
+            while cursor != -1:
+                try:
+                    response = self.__call_search(follower_endpoint, params)
+                    response_json = response.json()
+                    followers['users'].extend(response_json['users'])
+                    cursor = response_json['next_cursor']
+                except requests.exceptions.HTTPError as err:
+                    print("Could not finish the task due to - {}".format(err))
+            return followers
 
-                tweet = Tweet.save_tweet(payload)
-                if hashtags:
-                    tweet = HashTag.save_hashtag(tweet, hashtags)
+        response = self.__call_search(followers_endoint, params)
+        return response.json()
 
-                db_session.add(tweet)
-
-        db_session.commit()
+    def search_user(self, username):
+        user_endpoint = '/1.1/users/lookup.json'
+        params = {"screen_name": username}
+        response = self.__call_search(user_endpoint, params)
+        return response.json()

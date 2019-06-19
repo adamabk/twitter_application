@@ -26,12 +26,12 @@ class HashTag(Base):
         return {"hashtag": {"id": self.id, "tweet_id": self.tweet_id, "text": self.text}}
 
     @classmethod
-    def save_hashtag(cls, tweet, hashtags):
-        for hashtag in hashtags:
-            tweet.hashtags.append(HashTag(tweet.id, hashtag['text']))
+    def find_by_tweet_id(cls, tweet_id):
+        return db_session.query(cls).filter_by(tweet_id=tweet_id).first()
 
-        return tweet
-
+    @classmethod
+    def find_by_tweet_id_text(cls, tweet_id, hashtag_text):
+        return db_session.query(cls).filter_by(tweet_id=tweet_id, text=hashtag_text).first()
 
 # Entities hold all of the extra information regarding media, polls, and symbols
 # but for the sake of this project, will not continue modeling the data
